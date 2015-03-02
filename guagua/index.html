@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<meta name="viewport" content="width=device-width,height=device-height,inital-scale=1.0,maximum-scale=1.0,user-scalable=no;" />
+<style type="text/css">
+*{
+margin:0px;
+padding:0px;
+}
+#canvas{
+width: 100%;
+height: 100%;
+background-position: 0 0;
+background-size: 100% 100%;
+}
+</style>
+</head>
+<body>
+<canvas id="canvas"></canvas>
+</body>
+
+<script type="text/javascript">
+	
+	var back_index = Math.floor(Math.random()*10);
+	
+	var img_url = "img/"+back_index+".jpg";
+	
+	console.log("index:"+back_index);
+	var canvas  = document.querySelector("#canvas");
+	canvas.style.backgroundImage  = "url('"+img_url+"')";
+	var img = new Image();
+	img.src = img_url;
+	var ctx = null;
+	var isBrush = false;
+	var thumbSize = 32;
+	
+	function addLayer(color,width,height){
+		  ctx.fillStyle=color;
+          ctx.fillRect(0, 0, width, height);
+	}
+	
+	img.addEventListener("load",function(){
+		img.width = window.innerWidth;
+		img.height = window.innerHeight;
+		var img_width = img.width;
+		 var img_height = img.height;
+		 canvas.height = img_height;
+		 canvas.width = img.width;
+		 ctx=canvas.getContext('2d');
+           ctx.fillStyle='transparent';
+          ctx.fillRect(0, 0, img_width, img_height);
+          addLayer("#ddd",img_width,img_height);
+          ctx.globalCompositeOperation = 'destination-out'; 
+
+          canvas.addEventListener("touchstart",touchStart);
+          canvas.addEventListener("touchend",touchEnd);
+          canvas.addEventListener("touchmove",brush);
+          canvas.addEventListener("mousedown",touchStart);
+          canvas.addEventListener("mouseup",touchEnd);
+          canvas.addEventListener("mousemove",brush);
+	});
+	
+	function brush(e)
+	{
+		 if(e.changedTouches){
+           	  e=e.changedTouches[e.changedTouches.length-1];
+         }
+		if(isBrush){
+			 var x = (e.clientX + document.body.scrollLeft || e.pageX) || 0,
+            	 y = (e.clientY + document.body.scrollTop || e.pageY) || 0;
+         with(ctx) {
+              	  beginPath()
+           	  arc(x, y, thumbSize, 0, Math.PI * 2);
+         	       fill();
+         }
+		}
+	}
+	
+	function touchStart(e)
+	{
+		isBrush = true;
+	}
+	
+	function touchEnd(e)
+	{
+		isBrush = false;
+	}
+</script>
+
+</html>
